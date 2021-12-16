@@ -43,7 +43,7 @@ print('未评教')
 for d in no:
     print(f'\t{d[4]} {d[2]}')
 confirm = input('请核对信息，如信息无误请输入Y开始一键评教[y/N]: ')
-if confirm != 'Y' and confirm != 'N':
+if confirm != 'Y' and confirm != 'y':
     print('操作取消')
     exit(0)
 
