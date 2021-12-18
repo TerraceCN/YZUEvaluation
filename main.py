@@ -7,7 +7,12 @@ from decaptcha import decaptcha
 username = input('请输入学号: ')
 password = input('请输入密码: ')
 
+websites = ["http://jw0.yzu.edu.cn/", "http://jw1.yzu.edu.cn/", "http://jw2.yzu.edu.cn/", "http://jw3.yzu.edu.cn/"]
+
 client = httpx.Client()
+
+try:
+  
 captcha_content = client.get("http://jw1.yzu.edu.cn/validateCodeAction.do").content
 login_result = client.post(f"http://jw1.yzu.edu.cn/loginAction.do",
                            data={"zjh1": "",
