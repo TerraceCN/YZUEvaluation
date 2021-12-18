@@ -24,8 +24,7 @@ def login_action(site):
                                     "zjh": username,
                                     "mm": password,
                                     "v_yzm": decaptcha(captcha_content)})
-
-    assert "学分制综合教务" in login_result.text, '登陆失败，请检查用户名和密码'
+    assert "学分制综合教务" in login_result.text
 
 num = 0
 while num <= 3:
@@ -33,8 +32,17 @@ while num <= 3:
     try:
         login_action(website)
         break
-    except Exception:
+    except httpx.ConnectTimeout:
         num += 1
+        if num == 4:
+            print('连接超时，请检查是否为校园网环境')
+            exit()
+    except httpx.ConnectError:
+        print('连接错误，请检查是否为校园网环境')
+        exit()
+    except AssertionError:
+        print('登陆失败，请检查用户名和密码')
+        exit()
 
 print('正在获取评教列表')
 pj_list = client.get(f'{website}jxpgXsAction.do?oper=listWj&wjbz=null')
