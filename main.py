@@ -11,10 +11,9 @@ websites = ["http://jw0.yzu.edu.cn/", "http://jw1.yzu.edu.cn/", "http://jw2.yzu.
 
 client = httpx.Client()
 
-try:
-    website = 
-    captcha_content = client.get(f"{website}validateCodeAction.do").content
-    login_result = client.post(f"{website}loginAction.do",
+def login_action(site):
+    captcha_content = client.get(f"{site}validateCodeAction.do").content
+    login_result = client.post(f"{site}loginAction.do",
                             data={"zjh1": "",
                                     "tips": "",
                                     "lx": "",
@@ -25,11 +24,17 @@ try:
                                     "zjh": username,
                                     "mm": password,
                                     "v_yzm": decaptcha(captcha_content)})
-except httpcore.ReadTimeout:
-    
 
-assert "学分制综合教务" in login_result.text, '登陆失败，请检查用户名和密码'
+    assert "学分制综合教务" in login_result.text, '登陆失败，请检查用户名和密码'
 
+num = 0
+while num <= 3:
+    website = websites[num]
+    try:
+        login_action(website)
+        break
+    except Exception:
+        num += 1
 
 print('正在获取评教列表')
 pj_list = client.get(f'{website}jxpgXsAction.do?oper=listWj&wjbz=null')
@@ -80,7 +85,7 @@ for d in no:
                  'pgnr': d[5],
                  'xumanyzg': 'zg',
                  'wjbz': '',
-                 'zgpj': r'%C0%CF%CA%A6%BA%DC%B0%F4'})
+                 'zgpj': '近乎完美的教学'})
     result = client.post(f'{website}jxpgXsAction.do?oper=wjpg',
                          data=data)
     if '评估成功' in result.text:
