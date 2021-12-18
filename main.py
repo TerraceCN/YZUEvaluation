@@ -12,23 +12,27 @@ websites = ["http://jw0.yzu.edu.cn/", "http://jw1.yzu.edu.cn/", "http://jw2.yzu.
 client = httpx.Client()
 
 try:
-  
-captcha_content = client.get("http://jw1.yzu.edu.cn/validateCodeAction.do").content
-login_result = client.post(f"http://jw1.yzu.edu.cn/loginAction.do",
-                           data={"zjh1": "",
-                                 "tips": "",
-                                 "lx": "",
-                                 "evalue": "",
-                                 "eflag": "",
-                                 "fs": "",
-                                 "dzslh": "",
-                                 "zjh": username,
-                                 "mm": password,
-                                 "v_yzm": decaptcha(captcha_content)})
+    website = 
+    captcha_content = client.get(f"{website}validateCodeAction.do").content
+    login_result = client.post(f"{website}loginAction.do",
+                            data={"zjh1": "",
+                                    "tips": "",
+                                    "lx": "",
+                                    "evalue": "",
+                                    "eflag": "",
+                                    "fs": "",
+                                    "dzslh": "",
+                                    "zjh": username,
+                                    "mm": password,
+                                    "v_yzm": decaptcha(captcha_content)})
+except httpcore.ReadTimeout:
+    
+
 assert "学分制综合教务" in login_result.text, '登陆失败，请检查用户名和密码'
 
+
 print('正在获取评教列表')
-pj_list = client.get('http://jw1.yzu.edu.cn/jxpgXsAction.do?oper=listWj&wjbz=null')
+pj_list = client.get(f'{website}jxpgXsAction.do?oper=listWj&wjbz=null')
 html = etree.HTML(pj_list.text)
 yes = []
 no = []
@@ -47,13 +51,13 @@ for d in yes:
 print('未评教')
 for d in no:
     print(f'\t{d[4]} {d[2]}')
-confirm = input('请核对信息，如信息无误请输入Y开始一键评教[y/N]: ')
+confirm = input('请核对信息，如信息无误请输入Y开始一键评教[Y/N]: ')
 if confirm != 'Y' and confirm != 'y':
     print('操作取消')
     exit(0)
 
 for d in no:
-    page = client.post('http://jw1.yzu.edu.cn/jxpgXsAction.do',
+    page = client.post(f'{website}jxpgXsAction.do',
                        data={'wjbm': d[0],
                              'bpr': d[1],
                              'pgnr': d[5],
@@ -77,7 +81,7 @@ for d in no:
                  'xumanyzg': 'zg',
                  'wjbz': '',
                  'zgpj': r'%C0%CF%CA%A6%BA%DC%B0%F4'})
-    result = client.post('http://jw1.yzu.edu.cn/jxpgXsAction.do?oper=wjpg',
+    result = client.post(f'{website}jxpgXsAction.do?oper=wjpg',
                          data=data)
     if '评估成功' in result.text:
         print(f'{d[4]} 评教成功!')
