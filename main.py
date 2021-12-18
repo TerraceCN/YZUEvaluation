@@ -109,5 +109,4 @@ except KeyboardInterrupt:
     print('操作取消')
     os.system('pause')
 except Exception as e:
-    traceback.print_stack()
-    os.system('pause')
+    raise e
